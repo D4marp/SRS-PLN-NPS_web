@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+:root {
+  --pln-blue: #0099ff;
+  --pln-blue-dark: #0077cc;
+  --pln-navy: #00396b;
+  --pln-yellow: #ffc300;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body), 'Plus Jakarta Sans', system-ui, sans-serif;
+  color: #0f2d4d;
+  background-image:
+    linear-gradient(rgba(244,249,255,0.75), rgba(244,249,255,0.75)),
+    radial-gradient(circle at 14% 18%, rgba(0, 153, 255, 0.06), transparent 36%),
+    radial-gradient(circle at 82% 10%, rgba(255, 195, 0, 0.04), transparent 32%),
+    radial-gradient(circle at 70% 90%, rgba(0, 57, 107, 0.03), transparent 30%),
+    url('/bg_image.png');
+  background-color: #f4f9ff;
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-body), 'Plus Jakarta Sans', system-ui, sans-serif;
+}
