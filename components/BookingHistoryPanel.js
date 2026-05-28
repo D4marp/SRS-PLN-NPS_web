@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { Download, ExternalLink } from 'lucide-react';
+import { buildFeedbackExportRows, getRoomFacilitiesForBooking, getSelectedComplaintSet } from '../lib/feedback';
 
 const fieldClass =
   'h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition focus:border-sky-400';
@@ -22,6 +23,7 @@ function formatBookingDate(value) {
 
 export default function BookingHistoryPanel({
   bookings,
+  rooms = [],
   title = 'Riwayat Booking',
   subtitle = 'Filter riwayat booking berdasarkan status dan rentang tanggal, lalu export ke Excel.',
   showHeader = true,
@@ -66,25 +68,18 @@ export default function BookingHistoryPanel({
     return filteredBookings;
   }, [filteredBookings, previewLimit]);
 
+  const exportModel = useMemo(
+    () => buildFeedbackExportRows(filteredBookings, rooms),
+    [filteredBookings, rooms],
+  );
+
   const handleExport = async () => {
     try {
       setExporting(true);
       setFeedback('');
 
       const { writeFile, utils } = await import('xlsx');
-      const exportData = filteredBookings.map((booking) => ({
-        Ruangan: booking.roomName || '-',
-        'Tanggal Booking': formatBookingDate(booking.bookingDate),
-        'Jam Check-in': booking.checkInTime || '-',
-        'Jam Check-out': booking.checkOutTime || '-',
-        Status: booking.status || '-',
-        Pengguna: booking.userName || '-',
-        Email: booking.userEmail || '-',
-        Untuk: booking.bookedForName || '-',
-        Instansi: booking.bookedForCompany || '-',
-        'Jumlah Tamu': booking.numberOfGuests || '-',
-        Tujuan: booking.purpose || '-',
-      }));
+      const exportData = exportModel.rows;
 
       const worksheet = utils.json_to_sheet(exportData);
       const workbook = utils.book_new();
@@ -223,6 +218,45 @@ export default function BookingHistoryPanel({
                     </span>
                   </div>
                   <p className="line-clamp-2 text-xs text-slate-600">{booking.feedback.reason}</p>
+                  {(() => {
+                    const facilities = getRoomFacilitiesForBooking(booking, rooms);
+                    const selectedSet = getSelectedComplaintSet(booking);
+
+                    if (facilities.length === 0) {
+                      return null;
+                    }
+
+                    return (
+                      <div className="rounded-lg border border-slate-200 bg-slate-50 p-2">
+                        <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                          Facilities / Complaints
+                        </p>
+                        <div className="grid gap-1 sm:grid-cols-2">
+                          {facilities.map((facility) => {
+                            const selected = selectedSet.has(facility.toLowerCase());
+                            return (
+                              <div key={facility} className="flex items-center gap-2 text-xs text-slate-700">
+                                <span
+                                  className={[
+                                    'inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px] font-bold',
+                                    selected
+                                      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                                      : 'border-slate-300 bg-white text-slate-400',
+                                  ].join(' ')}
+                                >
+                                  {selected ? 'v' : 'x'}
+                                </span>
+                                <span className="truncate">{facility}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                  {booking.feedback.complaintOther ? (
+                    <p className="text-xs text-slate-600">Lainnya: {booking.feedback.complaintOther}</p>
+                  ) : null}
                 </div>
               ) : null}
             </article>

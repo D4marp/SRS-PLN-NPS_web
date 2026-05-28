@@ -459,6 +459,13 @@ export default function DashboardPage() {
 
       <main className="px-4 py-4 lg:ml-72 lg:px-6">
         <header className="mb-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+          <div className="mb-4 flex items-center justify-between gap-3 lg:hidden">
+            <Image src="/logo.png" alt="PLN NPS" width={170} height={54} className="h-auto w-auto max-w-[65vw]" priority />
+            <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-600">
+              Admin Access
+            </div>
+          </div>
+
           <div className="mb-4 flex flex-wrap items-center gap-2 lg:hidden">
             {MENU_ITEMS.map((item) => {
               const active = activeMenu === item.key;
@@ -575,6 +582,7 @@ export default function DashboardPage() {
                 <div className="mt-4">
                   <BookingHistoryPanel
                     bookings={bookings}
+                    rooms={rooms}
                     showHeader={false}
                     showFilters={false}
                     showExport={false}
